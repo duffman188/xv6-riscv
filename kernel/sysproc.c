@@ -91,3 +91,23 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+uint64
+sys_set_priority(void)
+{
+  int prio;
+
+  // Call separately because argint is void in this xv6
+  argint(0, &prio);
+
+  // Now validate the range
+  if (prio < 0 || prio > 100)
+    return -1;
+
+  struct proc *p = myproc();
+  acquire(&p->lock);
+  p->priority = prio;
+  release(&p->lock);
+
+  return 0;
+}
+
